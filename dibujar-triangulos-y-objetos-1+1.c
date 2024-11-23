@@ -31,6 +31,17 @@ typedef struct triobj
     struct triobj *hptr;
     } triobj;
 
+typedef struct argia
+    {
+    double I[3]; // Intentsitatea (Ir, Ig, Ib)
+    double F[3]; // Fokuaren bektorea (Fx, Fy, Fz)
+    double dir[3]; // Direkzioaren bektorea (dirX, dirY, dirZ)
+    int fokua;      // fokua bada, 1, bestela 0
+    double foku_irekiera;
+    mlist *mptr;
+    struct argia *hptr;
+    } argia;
+
 // testuraren informazioa
 // información de textura
 
@@ -44,6 +55,8 @@ triobj *foptr;
 triobj *sel_ptr;
 triobj *fCamptr;
 triobj *selCam_ptr;
+argia *fArgi_ptr;
+argia *selArgi_ptr;
 int denak;
 int lineak;
 int objektuak;
@@ -80,6 +93,98 @@ void mESA_kalkulatu(double m[16]);
 void analisi_biraketa(double vx, double vy, double vz, double alpha);
 void mESA_eguneratu();
 int talka();
+void argiak_hasieratu();
+void fokuak_kalkulatu(int hasieratu, int kam);
+
+void argiak_hasieratu() {
+    int i;
+    argia *argi_ptr;
+    mlist *mlag;
+
+    fokuak_kalkulatu(1, 0);
+
+    // bonbila
+    argi_ptr = (argia *)malloc(sizeof(argia));
+    mlag = (mlist *)malloc(sizeof(mlist));
+
+    argi_ptr->fokua = 0;
+    for (i=0; i<16; i++) mlag->m[i] = 0;
+    mlag->m[0] = 1;
+    mlag->m[5] = 1;
+    mlag->m[10] = 1;
+    mlag->m[15] = 1;
+    mlag->m[3] = 0.5;
+    mlag->m[7] = 0.7;
+    mlag->m[11] = 0.8;
+    mlag->hptr = 0;
+    argi_ptr->mptr = mlag;
+
+    argi_ptr->hptr = fArgi_ptr;
+    fArgi_ptr = argi_ptr;
+
+    // eguzkia
+    argi_ptr = (argia *)malloc(sizeof(argia));
+    mlag = (mlist *)malloc(sizeof(mlist));
+
+    argi_ptr->fokua = 0;
+    for (i=0; i<16; i++) mlag->m[i] = 0;
+    mlag->m[0] = 1;
+    mlag->m[5] = 1;
+    mlag->m[10] = 1;
+    mlag->m[15] = 1;
+    mlag->m[7] = 1;
+    mlag->hptr = 0;
+
+    argi_ptr->mptr = mlag;
+
+    argi_ptr->hptr = fArgi_ptr;
+    fArgi_ptr = argi_ptr;
+    selArgi_ptr = argi_ptr;
+}
+
+void fokuak_kalkulatu(int hasieratu, int kam) {
+    argia *argi_ptr;
+
+    if (hasieratu == 1) {
+        // kameraren fokua
+        argi_ptr = (argia *)malloc(sizeof(argia));
+        argi_ptr->fokua = 1;
+
+        argi_ptr->F[0] = -(selCam_ptr->mptr->m[2]);
+        argi_ptr->F[1] = -(selCam_ptr->mptr->m[6]);
+        argi_ptr->F[2] = -(selCam_ptr->mptr->m[10]);
+        argi_ptr->foku_irekiera = 0.5;
+
+        argi_ptr->mptr = 0;
+        argi_ptr->hptr = 0;
+        fArgi_ptr = argi_ptr;
+
+        // objektuaren fokua
+        argi_ptr = (argia *)malloc(sizeof(argia));
+        argi_ptr->fokua = 1;
+
+        argi_ptr->F[0] = -(sel_ptr->mptr->m[2]);
+        argi_ptr->F[1] = -(sel_ptr->mptr->m[6]);
+        argi_ptr->F[2] = -(sel_ptr->mptr->m[10]);
+        argi_ptr->foku_irekiera = 0.5;
+
+        argi_ptr->mptr = 0;
+        argi_ptr->hptr = fArgi_ptr;
+        fArgi_ptr = argi_ptr;
+        
+    } else { // kameraren edo objektuaren fokuak eguneratu
+        if (kam == 0) {
+            selArgi_ptr->F[0] = -(sel_ptr->mptr->m[2]);
+            selArgi_ptr->F[1] = -(sel_ptr->mptr->m[6]);
+            selArgi_ptr->F[2] = -(sel_ptr->mptr->m[10]);
+        } else {
+            selArgi_ptr->F[0] = -(selCam_ptr->mptr->m[2]);
+            selArgi_ptr->F[1] = -(selCam_ptr->mptr->m[6]);
+            selArgi_ptr->F[2] = -(selCam_ptr->mptr->m[10]);
+        }
+    }
+
+}
 
 void objektuari_aldaketa_sartu_ezk(double m[16])
 {
@@ -1393,7 +1498,7 @@ switch(key)
 		break;
     case 'C':
 		if (kameraOBJ == 1){ kameraOBJ = 0; printf("KameraOBJ=0\n");}
-		    else {kameraOBJ = 1; kamera = 0; analisi = 0, ald_lokala = 1; printf("KameraOBJ=1\n");}
+		    else {kameraOBJ = 1; kamera = 0; analisi = 0; ald_lokala = 1; printf("KameraOBJ=1\n");}
         print_egoerak();
         mESA_eguneratu();
 		break;
@@ -1630,6 +1735,7 @@ int retval;
         
         
         if (fCamptr != 0) mESA_kalkulatu(selCam_ptr->mptr->m);
+        argiak_hasieratu();
         printf("AUKERATUTAKO KAMERAREN IKUSPEGIA\n");
 	glutMainLoop();
 
