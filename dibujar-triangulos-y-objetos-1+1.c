@@ -36,10 +36,10 @@ typedef struct argia
     int piztu;
     double I[3]; // Intentsitatea (Ir, Ig, Ib)
     double F[3]; // Fokuaren bektorea (Fx, Fy, Fz)
-    double dir[3]; // Direkzioaren bektorea (dirX, dirY, dirZ)
+    double dir[3]; // Eguzkiaren direkzioaren bektorea (dirX, dirY, dirZ)
+    double pos[3]; // Bonbillaren posizioa (x, y, z)
     int fokua;      // fokua bada, 1, bestela 0
     double foku_irekiera;
-    mlist *mptr;
     } argia;
 
 // testuraren informazioa
@@ -112,42 +112,19 @@ void argiak_hasieratu() {
     fokuak_kalkulatu(1);
 
     // bonbila
-    mlag = (mlist *)malloc(sizeof(mlist));
-
-
     argiak_ptr[1].fokua = 0;
     argiak_ptr[1].piztu = 0;
     //printf("BBBBBBBB\n");
-    for (i=0; i<16; i++) mlag->m[i] = 0;
-    //printf("CCCCCCCCCCCC\n");
-    mlag->m[0] = 1;
-    mlag->m[5] = 1;
-    mlag->m[10] = 1;
-    mlag->m[15] = 1;
-    mlag->m[3] = 0.5;
-    mlag->m[7] = 0.7;
-    mlag->m[11] = 0.8;
-    mlag->hptr = 0;
-    argiak_ptr[1].mptr = mlag;
-    argiak_ptr[1].dir[0] = 0;
-    argiak_ptr[1].dir[1] = -1;
-    argiak_ptr[1].dir[2] = 0;
+    
+    argiak_ptr[1].pos[0] = 0;
+    argiak_ptr[1].pos[1] = 0.7;
+    argiak_ptr[1].pos[2] = 0;
 
     // eguzkia
-    mlag = (mlist *)malloc(sizeof(mlist));
-
     argiak_ptr[0].fokua = 0;
     argiak_ptr[0].piztu = 1;
     //printf("DDDDDDDDD\n");
-    for (i=0; i<16; i++) mlag->m[i] = 0;
-    mlag->m[0] = 1;
-    mlag->m[5] = 1;
-    mlag->m[10] = 1;
-    mlag->m[15] = 1;
-    mlag->m[7] = 1;
-    mlag->hptr = 0;
-
-    argiak_ptr[0].mptr = mlag;
+    
     argiak_ptr[1].dir[0] = -0.5;
     argiak_ptr[1].dir[1] = -0.5;
     argiak_ptr[1].dir[2] = 0;
@@ -169,7 +146,6 @@ void fokuak_kalkulatu(int hasieratu) {
         (argiak_ptr[3]).F[2] = -(selCam_ptr->mptr->m[10]);
         (argiak_ptr[3]).foku_irekiera = 0.5;
 
-        argiak_ptr[3].mptr = 0;
        
         // objektuaren fokua
         argiak_ptr[2].fokua = 1;
@@ -180,7 +156,6 @@ void fokuak_kalkulatu(int hasieratu) {
         (argiak_ptr[2]).F[2] = -(sel_ptr->mptr->m[10]);
         argiak_ptr[2].foku_irekiera = 0.5;
 
-        argiak_ptr[2].mptr = 0;
         
     } else if (hasieratu == 0) { // kameraren edo objektuaren fokuak eguneratu
         if (kontrola == 0) {
