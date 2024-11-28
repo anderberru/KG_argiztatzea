@@ -70,6 +70,7 @@ int perspektiba;
 int back_culling;
 int gorria;
 double mesa[16];
+double desplazamendua;
 int argia_index;
 
 char fitxiz[100];
@@ -1078,9 +1079,9 @@ void x_aldaketa(int dir)
         if (aldaketa == 't' && kontrola == 0 && kameraOBJ==0) {
             aldaketa_eginda = 1;
             if (dir == 1) {
-                desp = 0.1;
+                desp = desplazamendua;
             } else {
-                desp = -0.1;
+                desp = -desplazamendua;
             }
             for (i = 0; i<16; i++) {
                 if (i==0 || i==5 || i==10 || i==15) {
@@ -1143,9 +1144,9 @@ void y_aldaketa(int dir)
         if (aldaketa == 't' && kontrola == 0 && kameraOBJ == 0) {
             aldaketa_eginda = 1;
                 if (dir == 1) {
-                    desp = 0.1;
+                    desp = desplazamendua;
                 } else {
-                    desp = -0.1;
+                    desp = -desplazamendua;
                 }
                 for (i = 0; i<16; i++) {
                     if (i==0 || i==5 || i==10 || i==15) {
@@ -1210,9 +1211,9 @@ void z_aldaketa(int dir)
         if (aldaketa == 't' || kontrola == 1 || kameraOBJ == 1) {
             aldaketa_eginda = 1;
             if (dir == 1) {
-                desp = 0.1;
+                desp = desplazamendua;
             } else {
-                desp = -0.1;
+                desp = -desplazamendua;
             }
             if (kontrola == 1 || kameraOBJ == 1) desp = -desp;
 
@@ -1269,7 +1270,7 @@ int talka() {
     vnorm = sqrt(pow(vx, 2.0) + pow(vy, 2.0) + pow(vz, 2.0));
     //printf("DISTANTZIA: %f\n ", vnorm);
 
-    if (vnorm < 0.1) { // 0.1 aldaketetan egiten den desplazamendua da
+    if (vnorm < desplazamendua) { // 0.1 aldaketetan egiten den desplazamendua da
         return 1;
     }
     return 0;
@@ -1822,6 +1823,7 @@ int retval;
         analisi = 0;
         back_culling = 0;
         gorria = 0;
+        desplazamendua = 0.1;
 
         kamerak_hasieratu();
 
