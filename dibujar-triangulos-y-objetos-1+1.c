@@ -1106,7 +1106,7 @@ void x_aldaketa(int dir)
     aldaketa_eginda = 0;
 
     if ((kontrola == 0 && foptr != 0) || (kontrola == 1 && fCamptr != 0) || kontrola == 2) {
-        if ((aldaketa == 't' && kontrola == 0 && kameraOBJ==0) || (aldaketa == 't' && kontrola==2 && argia_index==1)) {
+        if ((aldaketa == 't' && kontrola == 0) || (aldaketa == 't' && kontrola==2 && argia_index==1)) {
             aldaketa_eginda = 1;
             if (dir == 1) {
                 desp = desplazamendua;
@@ -1123,7 +1123,7 @@ void x_aldaketa(int dir)
                 }
             }
         
-        } else if ((aldaketa == 'r' || kontrola == 1 || kameraOBJ == 1) || (aldaketa == 'r' && kontrola==2 && argia_index==0)) {
+        } else if ((aldaketa == 'r' || kontrola == 1) || (aldaketa == 'r' && kontrola==2 && argia_index==0)) {
             aldaketa_eginda = 1;
             if (dir == 1) {
                 alpha = 0.1;
@@ -1171,7 +1171,7 @@ void y_aldaketa(int dir)
     aldaketa_eginda = 0;
 
     if ((kontrola == 0 && foptr != 0) || (kontrola == 1 && fCamptr != 0) || kontrola == 2) {
-        if ((aldaketa == 't' && kontrola == 0 && kameraOBJ == 0) || (aldaketa == 't' && kontrola==2 && argia_index==1)) {
+        if ((aldaketa == 't' && kontrola == 0) || (aldaketa == 't' && kontrola==2 && argia_index==1)) {
             aldaketa_eginda = 1;
                 if (dir == 1) {
                     desp = desplazamendua;
@@ -1188,7 +1188,7 @@ void y_aldaketa(int dir)
                     }
                 }
             
-        } else if ((aldaketa == 'r' || kontrola == 1 || kameraOBJ == 1) || (aldaketa == 't' && kontrola==2 && argia_index==0)) {
+        } else if ((aldaketa == 'r' || kontrola == 1) || (aldaketa == 't' && kontrola==2 && argia_index==0)) {
             aldaketa_eginda = 1;
             if (dir == 1) {
                 alpha = 0.1;
@@ -1238,14 +1238,14 @@ void z_aldaketa(int dir)
     aldaketa_eginda = 0;
 
     if ((kontrola == 0 && foptr != 0) || (kontrola == 1 && fCamptr != 0)) {
-        if (aldaketa == 't' || kontrola == 1 || kameraOBJ == 1) {
+        if (aldaketa == 't' || kontrola == 1) {
             aldaketa_eginda = 1;
             if (dir == 1) {
                 desp = desplazamendua;
             } else {
                 desp = -desplazamendua;
             }
-            if (kontrola == 1 || kameraOBJ == 1) desp = -desp;
+            if (kontrola == 1) desp = -desp;
 
             for (i = 0; i<16; i++) {
                 if (i==0 || i==5 || i==10 || i==15) {
@@ -1652,13 +1652,13 @@ switch(key)
         }
 		break;
         case 'x':
-                if (kontrola != 1 && kameraOBJ == 0) x_aldaketa(1); else y_aldaketa(1);
+                if (kontrola != 1) x_aldaketa(1); else y_aldaketa(1);
 
                 if (kontrola == 0 && analisi==1 && foptr!=0) analisi_bektoreak();
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
                 break;
         case 'y':
-                if (kontrola != 1 && kameraOBJ == 0) y_aldaketa(1); else x_aldaketa(1);
+                if (kontrola != 1) y_aldaketa(1); else x_aldaketa(1);
                 if (kontrola == 0 && analisi==1 && foptr!=0) analisi_bektoreak();
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
                 break;
@@ -1669,12 +1669,12 @@ switch(key)
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
                 break;
         case 'X':
-                if (kontrola != 1 && kameraOBJ == 0) x_aldaketa(0); else y_aldaketa(0);
+                if (kontrola != 1) x_aldaketa(0); else y_aldaketa(0);
                 if (kontrola == 0 && analisi==1 && foptr!=0) analisi_bektoreak();
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
                 break;
         case 'Y':
-                if (kontrola != 1 && kameraOBJ == 0) y_aldaketa(0); else x_aldaketa(0);
+                if (kontrola != 1) y_aldaketa(0); else x_aldaketa(0);
                 if (kontrola == 0 && analisi==1 && foptr!=0) analisi_bektoreak();
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
                 break;
@@ -1878,7 +1878,7 @@ int retval;
         selCam_ptr = 0;
         aldaketa = 'r';
         ald_lokala = 1;
-        perspektiba = 0;
+        perspektiba = 1;
         analisi = 0;
         back_culling = 0;
         gorria = 0;
