@@ -78,6 +78,7 @@ int gorria;
 double mesa[16];
 double desplazamendua;
 int argia_index;
+double ikuste_bol_aldaketa;
 
 char fitxiz[100];
 
@@ -109,6 +110,7 @@ void piztu_itzali(int index);
 void print_piztutako_argiak();
 void foko_angelu_aldaketa(int handitu);
 void undo_argiak();
+double f_dist(double d);
 
 void argiak_hasieratu() {
     int i;
@@ -120,26 +122,23 @@ void argiak_hasieratu() {
     // eguzkia
     argiak_ptr[0].fokua = 0;
     argiak_ptr[0].piztu = 1;
-    //printf("DDDDDDDDD\n");
     
     argiak_ptr[0].dir = (koordlist *)malloc(sizeof(koordlist));
-    argiak_ptr[0].dir->koord[0] = -0.5;
-    argiak_ptr[0].dir->koord[1] = -0.5;
+    argiak_ptr[0].dir->koord[0] = 0;
+    argiak_ptr[0].dir->koord[1] = 1;
     argiak_ptr[0].dir->koord[2] = 0;
     argiak_ptr[0].dir->hptr = 0;
 
     // bonbila
     argiak_ptr[1].fokua = 0;
     argiak_ptr[1].piztu = 0;
-    //printf("BBBBBBBB\n");
     
     argiak_ptr[1].pos = (koordlist *)malloc(sizeof(koordlist));
-    argiak_ptr[1].pos->koord[0] = 0;
-    argiak_ptr[1].pos->koord[1] = 0.7;
+    argiak_ptr[1].pos->koord[0] = -0.5;
+    argiak_ptr[1].pos->koord[1] = 0.3;
     argiak_ptr[1].pos->koord[2] = 0;
     argiak_ptr[1].pos->hptr = 0;
 
-    //printf("AAAAAAAAA\n");
     fokuak_kalkulatu(1);
     
 }
@@ -196,6 +195,13 @@ void foko_angelu_aldaketa(int handitu) {
 
     selArgi_ptr->foku_irekiera = irekieraBerria;
     //printf("Foku irekiera: %f\n", selArgi_ptr->foku_irekiera);
+}
+
+double f_dist(double d)
+{
+    double a, b, c;
+    a = 1.2; b = 1.3; c = 1.5;
+    return (1.0 / (a*pow(d, 2.0) + b*d + c));
 }
 
 void objektuari_aldaketa_sartu_ezk(double m[16])
@@ -567,10 +573,10 @@ void mP_perspektiba_kalkulatu(triobj *optr, double mP[16]) {
     } else {
         mObj = selCam_ptr->mptr;
     }   
-    right = 0.1;
-    left = -0.1;
-    top = 0.1;
-    bottom = -0.1;
+    right = 0.1 + ikuste_bol_aldaketa;
+    left = -right;
+    top = 0.1 + ikuste_bol_aldaketa;
+    bottom = -top;
     near = 0.1;
     far = 100.0;
 
@@ -932,6 +938,7 @@ if (objektuak == 1) glClear( GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT );
 
 
  // kamerak marraztu
+ /*
 for (auxptr =fCamptr; auxptr != 0; auxptr = auxptr->hptr)
     {
         if (auxptr!=selCam_ptr) {
@@ -941,7 +948,7 @@ for (auxptr =fCamptr; auxptr != 0; auxptr = auxptr->hptr)
             }
         }
     }
-
+*/
 //argien bektoreak
 /*
 for (i=0; i<4; i++) {
@@ -1575,16 +1582,16 @@ switch(key)
 		        }
 		    }
 		break;
-    case '0':
+    case '1':
         piztu_itzali(0);
         break;
-    case '1':
+    case '2':
         piztu_itzali(1);
         break;
-    case '2':
+    case '3':
         piztu_itzali(2);
         break;
-    case '3':
+    case '4':
         piztu_itzali(3);
         break;
 	case 'd':
@@ -1653,7 +1660,6 @@ switch(key)
 		break;
         case 'x':
                 if (kontrola != 1) x_aldaketa(1); else y_aldaketa(1);
-
                 if (kontrola == 0 && analisi==1 && foptr!=0) analisi_bektoreak();
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
                 break;
@@ -1689,7 +1695,9 @@ switch(key)
                     if (kameraOBJ == 1) mESA_eguneratu();
                 } else if (kontrola == 2 && selArgi_ptr->fokua == 1) {
                     foko_angelu_aldaketa(1);
-                }
+                } else if (kontrola == 1 || kameraOBJ == 1) {
+                    ikuste_bol_aldaketa += 0.01;
+                } 
                 break;
         case '-':
                 if (kontrola == 0 && kameraOBJ == 0){
@@ -1697,7 +1705,9 @@ switch(key)
                     if (kameraOBJ == 1) mESA_eguneratu();
                 } else if (kontrola == 2 && selArgi_ptr->fokua == 1) {
                     foko_angelu_aldaketa(0);
-                }
+                } else if (kontrola == 1 || kameraOBJ == 1) {
+                    ikuste_bol_aldaketa -= 0.01;
+                } 
                 break;
         case 'u':
                 undo();
@@ -1822,11 +1832,11 @@ void print_egoerak() {
 }
 
 void print_piztutako_argiak() {
-    printf("PIZTUTAKO ARGIAK: ");
-    if (argiak_ptr[0].piztu == 1) printf("[0]EGUZKIA ");
-    if (argiak_ptr[1].piztu == 1) printf("[1]BONBILLA ");
-    if (argiak_ptr[2].piztu == 1) printf("[2]OBJEKTUA ");
-    if (argiak_ptr[3].piztu == 1) printf("[3]KAMERA ");
+    printf("PIZTUTAKO ARGIAK[1..4]: ");
+    if (argiak_ptr[0].piztu == 1) printf("[1]EGUZKIA ");
+    if (argiak_ptr[1].piztu == 1) printf("[2]BONBILLA ");
+    if (argiak_ptr[2].piztu == 1) printf("[3]OBJEKTUA ");
+    if (argiak_ptr[3].piztu == 1) printf("[4]KAMERA ");
     printf("\n");
 }
 
@@ -1880,9 +1890,10 @@ int retval;
         ald_lokala = 1;
         perspektiba = 1;
         analisi = 0;
-        back_culling = 0;
+        back_culling = 1;
         gorria = 0;
         desplazamendua = 0.1;
+        ikuste_bol_aldaketa = 0.0;
 
         kamerak_hasieratu();
 
@@ -1890,8 +1901,9 @@ int retval;
             else {
                 read_from_file("r_falke-1+1.txt", 0);
                 foptr->mptr->m[3]=-0.5;
-                read_from_file("destroyr-1+1.txt", 0);
+                read_from_file("abioia-1+1.txt", 0);
                 foptr->mptr->m[3]=0.5;
+                foptr->mptr->m[11]=-0.5;
             }
         
         
