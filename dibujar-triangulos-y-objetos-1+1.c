@@ -525,34 +525,17 @@ void mP_paraleloa_kalkulatu(triobj *optr, double mP[16]) {
         mObj = selCam_ptr->mptr;
     }   
     
-    right = 1;
-    left = -1;
-    top = 1;
-    bottom = -1;
+    right = 1 + ikuste_bol_aldaketa*10;
+    left = -right;
+    top = 1 + ikuste_bol_aldaketa*10;
+    bottom = -top;
     near = 0;
     far = -100; 
 
     for (i=0; i<16; i++) {
-        // m1[i] = 0;
-        // m2[i] = 0;
         mP[i] = 0;
     }
-    /*
-    m1[0] = 2.0 / (right-left);
-    m1[5] = 2.0 / (top-bottom);
-    m1[10] = 2.0 / (near-far);
-    m1[15] = 1;
-
-    m2[0] = 1;
-    m2[5] = 1;
-    m2[10] = 1;
-    m2[15] = 1;
-    m2[3] = -((right+left)/2.0);
-    m2[7] = -((top+bottom)/2.0);
-    m2[11] = -((near+far)/2.0);
-
-    mxm(mP, m1, m2);
-    */
+   
     mP[0] = 2.0 / (right-left);
     mP[5] = 2.0 / (top-bottom);
     mP[10] = 2.0 / (near-far);
