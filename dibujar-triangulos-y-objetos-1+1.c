@@ -372,7 +372,7 @@ for (i = 0, xkoord=c1x, zkoord=c1z, u=c1u, v=c1v;
     }
 
     glColor3ub(r,g,b);
-    glVertex3f(xkoord, linea, -zkoord );
+    glVertex3f(xkoord, linea, zkoord );
     zkoord+=cz;
     u+=cu;
     v+=cv;
@@ -1860,6 +1860,9 @@ int retval;
 	glClearColor( 0.0f, 0.0f, 0.7f, 1.0f );
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glEnable(GL_DEPTH_TEST); // activar el test de profundidad (Z-buffer)
+        glDepthFunc(GL_GREATER); // Handiena marraztu dezan
+        glClearDepth(0.0); // Buferra hasieratzeko balioa 0 izan dadila 1 izan beharrean.
+
         denak = 1;
         lineak = 0;
         objektuak = 1;
