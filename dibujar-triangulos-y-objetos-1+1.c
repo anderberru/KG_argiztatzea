@@ -40,11 +40,13 @@ typedef struct triobj
 typedef struct argia
     {
     int piztu;
-    double I[3]; // Intentsitatea (Ir, Ig, Ib)
-    double F[3]; // Fokuaren bektorea (Fx, Fy, Fz)
+    double I[3];    // Intentsitatea (Ir, Ig, Ib)
+    double F[3];    // Fokuaren bektorea (Fx, Fy, Fz)
     koordlist *dir; // Eguzkiaren direkzioaren bektorea (dirX, dirY, dirZ)
     koordlist *pos; // Bonbillaren posizioa (x, y, z)
     int fokua;      // fokua bada, 1, bestela 0
+    double kd[3];   // isla barreiatua (difuse)
+    double ks[3];   // ispilu isla (specular)
     double foku_irekiera;
     } argia;
 
@@ -79,6 +81,7 @@ double mesa[16];
 double desplazamendua;
 int argia_index;
 double ikuste_bol_aldaketa;
+double matR, matG, matB;
 
 char fitxiz[100];
 
@@ -111,6 +114,9 @@ void print_piztutako_argiak();
 void foko_angelu_aldaketa(int handitu);
 void undo_argiak();
 double f_dist(double d);
+void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *Ir, double *Ig, double *Ib);
+double puntuen_arteko_distantzia(double x1, double y1, double z1, double x2, double y2, double z2);
+void puntuen_arteko_bektorea(double x1, double y1, double z1, double x2, double y2, double z2, double *vx, double *vy, double *vz);
 
 void argiak_hasieratu() {
     int i;
@@ -249,6 +255,37 @@ void objektuari_aldaketa_sartu_ezk(double m[16])
     aux_ptr->mptr=mlag;
     fokuak_kalkulatu(0);
 
+}
+
+void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *IaR, double *IaG, double *IaB) {
+    double Lx, Ly, Lz, Hx, Hy, Hz, Vx, Vy, Vz, VgehiL[3], VgehiL_norm, Ir, Ig, Ib;
+
+    // V
+    puntuen_arteko_bektorea(x, y, z, selCam_ptr->mptr->m[3], selCam_ptr->mptr->m[7], selCam_ptr->mptr->m[11], &Vx, &Vy, &Vz);
+
+    // L
+    puntuen_arteko_bektorea(x, y, z, argiak_ptr[1].pos->koord[0], argiak_ptr[1].pos->koord[1], argiak_ptr[2].pos->koord[0], &Lx, &Ly, &Lz);
+    // H
+    VgehiL[0] = Vx + Lx;    VgehiL[1] = Vy + Ly;    VgehiL[2] = Vz + Lz;
+    VgehiL_norm = sqrt(pow(VgehiL[0], 2.0) + pow(VgehiL[1], 2.0) + pow(VgehiL[2], 2.0));
+    Hx = VgehiL[0] / VgehiL_norm;
+    Hy = VgehiL[1] / VgehiL_norm;
+    Hz = VgehiL[2] / VgehiL_norm;
+
+}
+
+void puntuen_arteko_bektorea(double x1, double y1, double z1, double x2, double y2, double z2, double *vx, double *vy, double *vz) {
+    *vx = x1 - x2;
+    *vy = y1 - y2;
+    *vz = z1 - z2;
+}
+
+double puntuen_arteko_distantzia(double x1, double y1, double z1, double x2, double y2, double z2) {
+    double vx, vy, vz, vnorm;
+
+    puntuen_arteko_bektorea(x1, y1, z1, x2, y2, z2, &vx, &vy, &vz);
+    vnorm = sqrt(pow(vx, 2.0) + pow(vy, 2.0) + pow(vz, 2.0));
+    return vnorm;
 }
 
 
