@@ -81,7 +81,8 @@ double mesa[16];
 double desplazamendua;
 int argia_index;
 double ikuste_bol_aldaketa;
-double matR, matG, matB;
+double IaR, IaG, IaB;
+double KaR, KaG, KaB;
 
 char fitxiz[100];
 
@@ -117,6 +118,9 @@ double f_dist(double d);
 void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *Ir, double *Ig, double *Ib);
 double puntuen_arteko_distantzia(double x1, double y1, double z1, double x2, double y2, double z2);
 void puntuen_arteko_bektorea(double x1, double y1, double z1, double x2, double y2, double z2, double *vx, double *vy, double *vz);
+void H_halkulatu(double Vx, double Vy, double Vz, double Lx, double Ly, double Lz, double *Hx, double *Hy, double *Hz);
+double I_formula(double I, double kd, double ks, double NxL, double NxH);
+int foko_barruan(double F[3], double Lx, double Ly, double Lz, double irekiera);
 
 void argiak_hasieratu() {
     int i;
@@ -210,6 +214,114 @@ double f_dist(double d)
     return (1.0 / (a*pow(d, 2.0) + b*d + c));
 }
 
+void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *IR, double *IG, double *IB) {
+    double Lx, Ly, Lz, Hx, Hy, Hz, Vx, Vy, Vz, NxL, NxH;
+    triobj *aux_ptr;
+    *IR = (IaR * KaR);
+    *IG = (IaG * KaG);
+    *IB = (IaB * KaB);
+
+    if (kameraOBJ == 1) {
+        aux_ptr = sel_ptr;
+    } else if (kameraOBJ == 0) {
+        aux_ptr = selCam_ptr;
+    }
+
+    // V
+    puntuen_arteko_bektorea(x, y, z, aux_ptr->mptr->m[3], aux_ptr->mptr->m[7], aux_ptr->mptr->m[11], &Vx, &Vy, &Vz);
+
+    // EGUZKIA
+    // L
+    Lx = -(argiak_ptr[0].dir->koord[0]);
+    Ly = -(argiak_ptr[0].dir->koord[1]);
+    Lz = -(argiak_ptr[0].dir->koord[2]);
+    // H
+    H_halkulatu(Vx, Vy, Vz, Lx, Ly, Lz, &Hx, &Hy, &Hz);
+
+    NxL = biderketa_eskalarra(N[0], N[1], N[2], Lx, Ly, Lz);
+    if (NxL < 0) NxL = 0;
+    NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
+
+    *IR += I_formula(argiak_ptr[0].I[0], argiak_ptr[0].kd[0], argiak_ptr[0].ks[0], NxL, NxH);
+    *IG += I_formula(argiak_ptr[0].I[1], argiak_ptr[0].kd[1], argiak_ptr[0].ks[1], NxL, NxH);
+    *IB += I_formula(argiak_ptr[0].I[2], argiak_ptr[0].kd[2], argiak_ptr[0].ks[2], NxL, NxH);
+
+    // BONBILA
+    // L
+    puntuen_arteko_bektorea(x, y, z, argiak_ptr[1].pos->koord[0], argiak_ptr[1].pos->koord[1], argiak_ptr[1].pos->koord[2], &Lx, &Ly, &Lz);
+    // H
+    H_halkulatu(Vx, Vy, Vz, Lx, Ly, Lz, &Hx, &Hy, &Hz);
+
+    NxL = biderketa_eskalarra(N[0], N[1], N[2], Lx, Ly, Lz);
+    if (NxL < 0) NxL = 0;
+    NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
+
+    *IR += I_formula(argiak_ptr[1].I[0], argiak_ptr[1].kd[0], argiak_ptr[1].ks[0], NxL, NxH);
+    *IG += I_formula(argiak_ptr[1].I[1], argiak_ptr[1].kd[1], argiak_ptr[1].ks[1], NxL, NxH);
+    *IB += I_formula(argiak_ptr[1].I[2], argiak_ptr[1].kd[2], argiak_ptr[1].ks[2], NxL, NxH);
+
+    // OBJEKTUA
+    // L
+    puntuen_arteko_bektorea(x, y, z, sel_ptr->mptr->m[3], sel_ptr->mptr->m[7], sel_ptr->mptr->m[11], &Lx, &Ly, &Lz);
+    // H
+    H_halkulatu(Vx, Vy, Vz, Lx, Ly, Lz, &Hx, &Hy, &Hz);
+
+    NxL = biderketa_eskalarra(N[0], N[1], N[2], Lx, Ly, Lz);
+    if (NxL < 0) NxL = 0;
+    NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
+
+    // KAMERA
+    // L
+    puntuen_arteko_bektorea(x, y, z, selCam_ptr->mptr->m[3], selCam_ptr->mptr->m[7], selCam_ptr->mptr->m[11], &Lx, &Ly, &Lz);
+    // H
+    H_halkulatu(Vx, Vy, Vz, Lx, Ly, Lz, &Hx, &Hy, &Hz);
+
+    NxL = biderketa_eskalarra(N[0], N[1], N[2], Lx, Ly, Lz);
+    if (NxL < 0) NxL = 0;
+    NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
+
+}
+
+double I_formula(double I, double kd, double ks, double NxL, double NxH) {
+    return (I*(kd*NxL + ks*pow(NxH, 4*50)));
+}
+
+int foko_barruan(double F[3], double Lx, double Ly, double Lz, double irekiera) {
+    double F_x_minusL;
+
+    F_x_minusL = biderketa_eskalarra(F[0], F[1], F[2], -Lx, -Ly, -Lz);
+    if (F_x_minusL > cos(irekiera)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+void H_halkulatu(double Vx, double Vy, double Vz, double Lx, double Ly, double Lz, double *Hx, double *Hy, double *Hz) {
+    double VgehiL[3], VgehiL_norm;
+
+    VgehiL[0] = Vx + Lx;    VgehiL[1] = Vy + Ly;    VgehiL[2] = Vz + Lz;
+    VgehiL_norm = sqrt(pow(VgehiL[0], 2.0) + pow(VgehiL[1], 2.0) + pow(VgehiL[2], 2.0));
+    *Hx = VgehiL[0] / VgehiL_norm;
+    *Hy = VgehiL[1] / VgehiL_norm;
+    *Hz = VgehiL[2] / VgehiL_norm;
+}
+
+void puntuen_arteko_bektorea(double x1, double y1, double z1, double x2, double y2, double z2, double *vx, double *vy, double *vz) {
+    *vx = x1 - x2;
+    *vy = y1 - y2;
+    *vz = z1 - z2;
+}
+
+double puntuen_arteko_distantzia(double x1, double y1, double z1, double x2, double y2, double z2) {
+    double vx, vy, vz, vnorm;
+
+    puntuen_arteko_bektorea(x1, y1, z1, x2, y2, z2, &vx, &vy, &vz);
+    vnorm = sqrt(pow(vx, 2.0) + pow(vy, 2.0) + pow(vz, 2.0));
+    return vnorm;
+}
+
+
 void objektuari_aldaketa_sartu_ezk(double m[16])
 {
     int j;
@@ -256,39 +368,6 @@ void objektuari_aldaketa_sartu_ezk(double m[16])
     fokuak_kalkulatu(0);
 
 }
-
-void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *IaR, double *IaG, double *IaB) {
-    double Lx, Ly, Lz, Hx, Hy, Hz, Vx, Vy, Vz, VgehiL[3], VgehiL_norm, Ir, Ig, Ib;
-
-    // V
-    puntuen_arteko_bektorea(x, y, z, selCam_ptr->mptr->m[3], selCam_ptr->mptr->m[7], selCam_ptr->mptr->m[11], &Vx, &Vy, &Vz);
-
-    // L
-    puntuen_arteko_bektorea(x, y, z, argiak_ptr[1].pos->koord[0], argiak_ptr[1].pos->koord[1], argiak_ptr[2].pos->koord[0], &Lx, &Ly, &Lz);
-    // H
-    VgehiL[0] = Vx + Lx;    VgehiL[1] = Vy + Ly;    VgehiL[2] = Vz + Lz;
-    VgehiL_norm = sqrt(pow(VgehiL[0], 2.0) + pow(VgehiL[1], 2.0) + pow(VgehiL[2], 2.0));
-    Hx = VgehiL[0] / VgehiL_norm;
-    Hy = VgehiL[1] / VgehiL_norm;
-    Hz = VgehiL[2] / VgehiL_norm;
-
-}
-
-void puntuen_arteko_bektorea(double x1, double y1, double z1, double x2, double y2, double z2, double *vx, double *vy, double *vz) {
-    *vx = x1 - x2;
-    *vy = y1 - y2;
-    *vz = z1 - z2;
-}
-
-double puntuen_arteko_distantzia(double x1, double y1, double z1, double x2, double y2, double z2) {
-    double vx, vy, vz, vnorm;
-
-    puntuen_arteko_bektorea(x1, y1, z1, x2, y2, z2, &vx, &vy, &vz);
-    vnorm = sqrt(pow(vx, 2.0) + pow(vy, 2.0) + pow(vz, 2.0));
-    return vnorm;
-}
-
-
 
 void objektuari_aldaketa_sartu_esk(double m[16])
 {
