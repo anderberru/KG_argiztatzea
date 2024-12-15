@@ -16,6 +16,8 @@
 #include <math.h>
 #include "cargar-triangulo.h"
 
+#define PI 3.14159265358979323846
+
 typedef struct mlist
     {
     double m[16];
@@ -247,7 +249,7 @@ void foko_angelu_aldaketa(int handitu) {
     else alpha = -0.1;
 
     irekieraBerria = selArgi_ptr->foku_irekiera + alpha;
-    if (irekieraBerria < 0) return;
+    if (irekieraBerria < 0 || irekieraBerria > PI) return;
 
     selArgi_ptr->foku_irekiera = irekieraBerria;
     //printf("Foku irekiera: %f\n", selArgi_ptr->foku_irekiera);
@@ -264,7 +266,7 @@ double f_dist(double d)
 }
 
 void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *IR, double *IG, double *IB) {
-    double Lx, Ly, Lz, Hx, Hy, Hz, Vx, Vy, Vz, NxL, NxH, intenR, intenG, intenB, dist, foko_kam[3], f_d;
+    double Lx, Ly, Lz, Hx, Hy, Hz, Vx, Vy, Vz, NxL, NxH, intenR, intenG, intenB, dist, foko_kam[3], f_d, L_norm;
     triobj *aux_ptr;
     int foko_barruan;
 
@@ -291,6 +293,10 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *
     Ly = -(argiak_ptr[0].dir->koord[1]);
     Lz = -(argiak_ptr[0].dir->koord[2]);
     mxv_2(mesa, Lx, Ly, Lz, &Lx, &Ly, &Lz);
+    L_norm = sqrt(pow(Lx, 2) + pow(Ly, 2) + pow(Lz, 2));
+    Lx = Lx / L_norm;
+    Ly = Ly / L_norm;
+    Lz = Lz / L_norm;
     // H
     H_halkulatu(Vx, Vy, Vz, Lx, Ly, Lz, &Hx, &Hy, &Hz);
     //mxv_2(mesa, Hx, Hy, Hz, &Hx, &Hy, &Hz);
@@ -299,6 +305,8 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *
     if (NxL < 0) NxL = 0;
     NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
     if (NxH < 0) NxH = 0;
+
+    if (NxL >= 1 || NxH >= 1) printf("NxL: %f, NxH: %f\n", NxL, NxH);
 
     intenR += (argiak_ptr[0].piztu) * I_formula(argiak_ptr[0].I[0], argiak_ptr[0].kd[0], argiak_ptr[0].ks[0], NxL, NxH);
     intenG += (argiak_ptr[0].piztu) * I_formula(argiak_ptr[0].I[1], argiak_ptr[0].kd[1], argiak_ptr[0].ks[1], NxL, NxH);
@@ -311,6 +319,11 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *
     // L
     puntuen_arteko_bektorea(x, y, z, argiak_ptr[1].pos->koord[0], argiak_ptr[1].pos->koord[1], argiak_ptr[1].pos->koord[2], &Lx, &Ly, &Lz);
     mxv_2(mesa, Lx, Ly, Lz, &Lx, &Ly, &Lz);
+    L_norm = sqrt(pow(Lx, 2) + pow(Ly, 2) + pow(Lz, 2));
+    Lx = Lx / L_norm;
+    Ly = Ly / L_norm;
+    Lz = Lz / L_norm;
+
     // H
     H_halkulatu(Vx, Vy, Vz, Lx, Ly, Lz, &Hx, &Hy, &Hz);
     //mxv_2(mesa, Hx, Hy, Hz, &Hx, &Hy, &Hz);
@@ -319,18 +332,30 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *
     if (NxL < 0) NxL = 0;
     NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
     if (NxH < 0) NxH = 0;
+    
 
-    intenR += (argiak_ptr[1].piztu)  * I_formula(argiak_ptr[1].I[0], argiak_ptr[1].kd[0], argiak_ptr[1].ks[0], NxL, NxH);
-    intenG += (argiak_ptr[1].piztu)  * I_formula(argiak_ptr[1].I[1], argiak_ptr[1].kd[1], argiak_ptr[1].ks[1], NxL, NxH);
-    intenB += (argiak_ptr[1].piztu)  * I_formula(argiak_ptr[1].I[2], argiak_ptr[1].kd[2], argiak_ptr[1].ks[2], NxL, NxH);
+    intenR += (argiak_ptr[1].piztu) * I_formula(argiak_ptr[1].I[0], argiak_ptr[1].kd[0], argiak_ptr[1].ks[0], NxL, NxH);
+    intenG += (argiak_ptr[1].piztu) * I_formula(argiak_ptr[1].I[1], argiak_ptr[1].kd[1], argiak_ptr[1].ks[1], NxL, NxH);
+    intenB += (argiak_ptr[1].piztu) * I_formula(argiak_ptr[1].I[2], argiak_ptr[1].kd[2], argiak_ptr[1].ks[2], NxL, NxH);
 
     // OBJEKTUA
     dist = puntuen_arteko_distantzia(x, y, z, sel_ptr->mptr->m[3], sel_ptr->mptr->m[7], sel_ptr->mptr->m[11]);
     f_d = f_dist(dist);
+    f_d = 1;
     
     // L
-    puntuen_arteko_bektorea(x, y, z, sel_ptr->mptr->m[3], sel_ptr->mptr->m[7], sel_ptr->mptr->m[11], &Lx, &Ly, &Lz);
-    mxv_2(mesa, Lx, Ly, Lz, &Lx, &Ly, &Lz);
+    if (kameraOBJ == 0) {
+        puntuen_arteko_bektorea(x, y, z, sel_ptr->mptr->m[3], sel_ptr->mptr->m[7], sel_ptr->mptr->m[11], &Lx, &Ly, &Lz);
+        mxv_2(mesa, Lx, Ly, Lz, &Lx, &Ly, &Lz);
+    } else {
+        Lx = Vx;
+        Ly = Vy;
+        Lz = Vz;
+    }
+    L_norm = sqrt(pow(Lx, 2) + pow(Ly, 2) + pow(Lz, 2));
+    Lx = Lx / L_norm;
+    Ly = Ly / L_norm;
+    Lz = Lz / L_norm;
     // H
     H_halkulatu(Vx, Vy, Vz, Lx, Ly, Lz, &Hx, &Hy, &Hz);
     //mxv_2(mesa, Hx, Hy, Hz, &Hx, &Hy, &Hz);
@@ -349,12 +374,17 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *
     // KAMERA
     dist = puntuen_arteko_distantzia(x, y, z, selCam_ptr->mptr->m[3], selCam_ptr->mptr->m[7], selCam_ptr->mptr->m[11]);
     f_d = f_dist(dist);
+    f_d = 1;
     // L
     //puntuen_arteko_bektorea(x, y, z, selCam_ptr->mptr->m[3], selCam_ptr->mptr->m[7], selCam_ptr->mptr->m[11], &Lx, &Ly, &Lz);
     //mxv_2(mesa, Lx, Ly, Lz, &Lx, &Ly, &Lz);
     Lx = Vx;
     Ly = Vy;
     Lz = Vz;
+    L_norm = sqrt(pow(Lx, 2) + pow(Ly, 2) + pow(Lz, 2));
+    Lx = Lx / L_norm;
+    Ly = Ly / L_norm;
+    Lz = Lz / L_norm;
     // H
     H_halkulatu(Vx, Vy, Vz, Lx, Ly, Lz, &Hx, &Hy, &Hz);
     //mxv_2(mesa, Hx, Hy, Hz, &Hx, &Hy, &Hz);
@@ -1367,7 +1397,7 @@ void x_aldaketa(int dir)
                 }
             }
         
-        } else if ((aldaketa == 'r' || kontrola == 1) || (aldaketa == 'r' && kontrola==2 && argia_index==0)) {
+        } else if ((aldaketa == 'r' || kontrola == 1) && kontrola != 2) {
             aldaketa_eginda = 1;
             if (dir == 1) {
                 alpha = 0.1;
@@ -1432,7 +1462,7 @@ void y_aldaketa(int dir)
                     }
                 }
             
-        } else if ((aldaketa == 'r' || kontrola == 1) || (aldaketa == 't' && kontrola==2 && argia_index==0)) {
+        } else if ((aldaketa == 'r' || kontrola == 1) && kontrola != 2) {
             aldaketa_eginda = 1;
             if (dir == 1) {
                 alpha = 0.1;
@@ -1480,9 +1510,9 @@ void z_aldaketa(int dir)
     int i, aldaketa_eginda;
     float desp, alpha;
     aldaketa_eginda = 0;
-
-    if ((kontrola == 0 && foptr != 0) || (kontrola == 1 && fCamptr != 0)) {
-        if (aldaketa == 't' || kontrola == 1) {
+    
+    if ((kontrola == 0 && foptr != 0) || (kontrola == 1 && fCamptr != 0) || kontrola == 2) {
+        if ((aldaketa == 't' || kontrola == 1) || (aldaketa == 't' && kontrola==2 && argia_index==1)) {
             aldaketa_eginda = 1;
             if (dir == 1) {
                 desp = desplazamendua;
@@ -1501,7 +1531,7 @@ void z_aldaketa(int dir)
                 }
             }
             
-        } else if (aldaketa == 'r' && kontrola == 0) {
+        } else if ((aldaketa == 'r' && kontrola == 0) || (kontrola==2 && argia_index==0)) {
             aldaketa_eginda = 1;
             if (dir == 1) {
                 alpha = 0.1;
@@ -1899,32 +1929,38 @@ switch(key)
         }
 		break;
         case 'x':
+                if (kontrola == 2 && argia_index == 0) {z_aldaketa(1); break;}
                 if (kontrola != 1) x_aldaketa(1); else y_aldaketa(1);
                 if (kontrola == 0 && analisi==1 && foptr!=0) analisi_bektoreak();
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
                 break;
         case 'y':
+                if (kontrola == 2 && argia_index == 0) break;
                 if (kontrola != 1) y_aldaketa(1); else x_aldaketa(1);
                 if (kontrola == 0 && analisi==1 && foptr!=0) analisi_bektoreak();
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
                 break;
         case 'z':
+                if (kontrola == 2 && argia_index == 0) break;
                 if (kontrola == 1 && analisi == 1 && talka() == 1) break;
                 z_aldaketa(1);
                 if (kontrola == 0 && analisi==1 && foptr!=0) analisi_bektoreak();
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
                 break;
         case 'X':
+                if (kontrola == 2 && argia_index == 0) {z_aldaketa(0); break;}
                 if (kontrola != 1) x_aldaketa(0); else y_aldaketa(0);
                 if (kontrola == 0 && analisi==1 && foptr!=0) analisi_bektoreak();
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
                 break;
         case 'Y':
+                if (kontrola == 2 && argia_index == 0) break;
                 if (kontrola != 1) y_aldaketa(0); else x_aldaketa(0);
                 if (kontrola == 0 && analisi==1 && foptr!=0) analisi_bektoreak();
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
                 break;
         case 'Z':
+                if (kontrola == 2 && argia_index == 0) break;
                 z_aldaketa(0);
                 if (kontrola == 0 && analisi==1 && foptr!=0) analisi_bektoreak();
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
