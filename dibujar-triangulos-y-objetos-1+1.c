@@ -256,7 +256,7 @@ void foko_angelu_aldaketa(int handitu) {
 double f_dist(double d)
 {
     double a, b, c, izendatzailea;
-    a = 1; b = 1; c = 1.5;
+    a = 1; b = 1; c = 1;
 
     izendatzailea = (a*pow(d, 2.0) + b*d + c);
     if (izendatzailea < 1) return 1;
@@ -264,7 +264,7 @@ double f_dist(double d)
 }
 
 void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *IR, double *IG, double *IB) {
-    double Lx, Ly, Lz, Hx, Hy, Hz, Vx, Vy, Vz, NxL, NxH, intenR, intenG, intenB, dist;
+    double Lx, Ly, Lz, Hx, Hy, Hz, Vx, Vy, Vz, NxL, NxH, intenR, intenG, intenB, dist, foko_kam[3], f_d;
     triobj *aux_ptr;
     int foko_barruan;
 
@@ -298,13 +298,16 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *
     NxL = biderketa_eskalarra(N[0], N[1], N[2], Lx, Ly, Lz);
     if (NxL < 0) NxL = 0;
     NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
+    if (NxH < 0) NxH = 0;
 
-    intenR += (argiak_ptr[0].piztu)*I_formula(argiak_ptr[0].I[0], argiak_ptr[0].kd[0], argiak_ptr[0].ks[0], NxL, NxH);
-    intenG += (argiak_ptr[0].piztu)*I_formula(argiak_ptr[0].I[1], argiak_ptr[0].kd[1], argiak_ptr[0].ks[1], NxL, NxH);
-    intenB += (argiak_ptr[0].piztu)*I_formula(argiak_ptr[0].I[2], argiak_ptr[0].kd[2], argiak_ptr[0].ks[2], NxL, NxH);
+    intenR += (argiak_ptr[0].piztu) * I_formula(argiak_ptr[0].I[0], argiak_ptr[0].kd[0], argiak_ptr[0].ks[0], NxL, NxH);
+    intenG += (argiak_ptr[0].piztu) * I_formula(argiak_ptr[0].I[1], argiak_ptr[0].kd[1], argiak_ptr[0].ks[1], NxL, NxH);
+    intenB += (argiak_ptr[0].piztu) * I_formula(argiak_ptr[0].I[2], argiak_ptr[0].kd[2], argiak_ptr[0].ks[2], NxL, NxH);
 
     // BONBILA
     //dist = puntuen_arteko_distantzia(x, y, z, argiak_ptr[1].pos->koord[0], argiak_ptr[1].pos->koord[1], argiak_ptr[1].pos->koord[2]);
+    //f_d = f_dist(dist);
+    //f_d = 1;
     // L
     puntuen_arteko_bektorea(x, y, z, argiak_ptr[1].pos->koord[0], argiak_ptr[1].pos->koord[1], argiak_ptr[1].pos->koord[2], &Lx, &Ly, &Lz);
     mxv_2(mesa, Lx, Ly, Lz, &Lx, &Ly, &Lz);
@@ -315,14 +318,16 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *
     NxL = biderketa_eskalarra(N[0], N[1], N[2], Lx, Ly, Lz);
     if (NxL < 0) NxL = 0;
     NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
+    if (NxH < 0) NxH = 0;
 
-    intenR += (argiak_ptr[1].piztu)*I_formula(argiak_ptr[1].I[0], argiak_ptr[1].kd[0], argiak_ptr[1].ks[0], NxL, NxH);
-    intenG += (argiak_ptr[1].piztu)*I_formula(argiak_ptr[1].I[1], argiak_ptr[1].kd[1], argiak_ptr[1].ks[1], NxL, NxH);
-    intenB += (argiak_ptr[1].piztu)*I_formula(argiak_ptr[1].I[2], argiak_ptr[1].kd[2], argiak_ptr[1].ks[2], NxL, NxH);
+    intenR += (argiak_ptr[1].piztu)  * I_formula(argiak_ptr[1].I[0], argiak_ptr[1].kd[0], argiak_ptr[1].ks[0], NxL, NxH);
+    intenG += (argiak_ptr[1].piztu)  * I_formula(argiak_ptr[1].I[1], argiak_ptr[1].kd[1], argiak_ptr[1].ks[1], NxL, NxH);
+    intenB += (argiak_ptr[1].piztu)  * I_formula(argiak_ptr[1].I[2], argiak_ptr[1].kd[2], argiak_ptr[1].ks[2], NxL, NxH);
 
     // OBJEKTUA
     dist = puntuen_arteko_distantzia(x, y, z, sel_ptr->mptr->m[3], sel_ptr->mptr->m[7], sel_ptr->mptr->m[11]);
-    dist = 1;
+    f_d = f_dist(dist);
+    
     // L
     puntuen_arteko_bektorea(x, y, z, sel_ptr->mptr->m[3], sel_ptr->mptr->m[7], sel_ptr->mptr->m[11], &Lx, &Ly, &Lz);
     mxv_2(mesa, Lx, Ly, Lz, &Lx, &Ly, &Lz);
@@ -333,16 +338,17 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *
     NxL = biderketa_eskalarra(N[0], N[1], N[2], Lx, Ly, Lz);
     if (NxL < 0) NxL = 0;
     NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
+    if (NxH < 0) NxH = 0;
 
     foko_barruan = foko_barruan_dago(argiak_ptr[2].F, Lx, Ly, Lz, argiak_ptr[2].foku_irekiera);
 
-    intenR += (argiak_ptr[2].piztu)*foko_barruan*dist*I_formula(argiak_ptr[2].I[0], argiak_ptr[2].kd[0], argiak_ptr[2].ks[0], NxL, NxH);
-    intenG += (argiak_ptr[2].piztu)*foko_barruan*dist*I_formula(argiak_ptr[2].I[1], argiak_ptr[2].kd[1], argiak_ptr[2].ks[1], NxL, NxH);
-    intenB += (argiak_ptr[2].piztu)*foko_barruan*dist*I_formula(argiak_ptr[2].I[2], argiak_ptr[2].kd[2], argiak_ptr[2].ks[2], NxL, NxH);
+    intenR += (argiak_ptr[2].piztu) * f_d * foko_barruan * I_formula(argiak_ptr[2].I[0], argiak_ptr[2].kd[0], argiak_ptr[2].ks[0], NxL, NxH);
+    intenG += (argiak_ptr[2].piztu) * f_d * foko_barruan * I_formula(argiak_ptr[2].I[1], argiak_ptr[2].kd[1], argiak_ptr[2].ks[1], NxL, NxH);
+    intenB += (argiak_ptr[2].piztu) * f_d * foko_barruan * I_formula(argiak_ptr[2].I[2], argiak_ptr[2].kd[2], argiak_ptr[2].ks[2], NxL, NxH);
 
     // KAMERA
     dist = puntuen_arteko_distantzia(x, y, z, selCam_ptr->mptr->m[3], selCam_ptr->mptr->m[7], selCam_ptr->mptr->m[11]);
-    dist = 1;
+    f_d = f_dist(dist);
     // L
     //puntuen_arteko_bektorea(x, y, z, selCam_ptr->mptr->m[3], selCam_ptr->mptr->m[7], selCam_ptr->mptr->m[11], &Lx, &Ly, &Lz);
     //mxv_2(mesa, Lx, Ly, Lz, &Lx, &Ly, &Lz);
@@ -356,12 +362,17 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *
     NxL = biderketa_eskalarra(N[0], N[1], N[2], Lx, Ly, Lz);
     if (NxL < 0) NxL = 0;
     NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
-    
-    foko_barruan = foko_barruan_dago(argiak_ptr[3].F, Lx, Ly, Lz, argiak_ptr[3].foku_irekiera);
+    if (NxH < 0) NxH = 0;
 
-    intenR += (argiak_ptr[3].piztu)*foko_barruan*dist*I_formula(argiak_ptr[3].I[0], argiak_ptr[3].kd[0], argiak_ptr[3].ks[0], NxL, NxH);
-    intenG += (argiak_ptr[3].piztu)*foko_barruan*dist*I_formula(argiak_ptr[3].I[1], argiak_ptr[3].kd[1], argiak_ptr[3].ks[1], NxL, NxH);
-    intenB += (argiak_ptr[3].piztu)*foko_barruan*dist*I_formula(argiak_ptr[3].I[2], argiak_ptr[3].kd[2], argiak_ptr[3].ks[2], NxL, NxH);
+    foko_kam[0] = 0; foko_kam[1] = 0; foko_kam[2] = -1;
+    foko_barruan = foko_barruan_dago(foko_kam, Lx, Ly, Lz, argiak_ptr[3].foku_irekiera);
+    //foko_barruan = foko_barruan_dago(argiak_ptr[3].F, Lx, Ly, Lz, argiak_ptr[3].foku_irekiera);
+
+    intenR += (argiak_ptr[3].piztu) * foko_barruan * f_d * I_formula(argiak_ptr[3].I[0], argiak_ptr[3].kd[0], argiak_ptr[3].ks[0], NxL, NxH);
+    intenG += (argiak_ptr[3].piztu) * foko_barruan * f_d * I_formula(argiak_ptr[3].I[1], argiak_ptr[3].kd[1], argiak_ptr[3].ks[1], NxL, NxH);
+    intenB += (argiak_ptr[3].piztu) * foko_barruan * f_d * I_formula(argiak_ptr[3].I[2], argiak_ptr[3].kd[2], argiak_ptr[3].ks[2], NxL, NxH);
+
+    //printf("Ir: %f, Ig: %f, Ib: %f\n", intenR, intenG, intenB);
 
     *IR = intenR;
     *IG = intenG;
@@ -374,9 +385,12 @@ double I_formula(double I, double kd, double ks, double NxL, double NxH) {
 }
 
 int foko_barruan_dago(double F[3], double Lx, double Ly, double Lz, double irekiera) {
-    double F_x_minusL;
+    double F_x_minusL, fx, fy, fz;
 
-    F_x_minusL = biderketa_eskalarra(F[0], F[1], F[2], -Lx, -Ly, -Lz);
+    if (F[0] != 0 || F[1] != 0 || F[2] != -1) mxv_2(mesa, F[0], F[1], F[2], &fx, &fy, &fz);
+    else {fx = F[0]; fy = F[1]; fz = F[2];}
+
+    F_x_minusL = biderketa_eskalarra(fx, fy, fz, -Lx, -Ly, -Lz);
     if (F_x_minusL > cos(irekiera)) {
         return 1;
     } else {
@@ -572,11 +586,14 @@ for (i = -1, xkoord=c1x, zkoord=c1z, u=c1u, v=c1v;
             g = optr->rgbptr[1];
             b = optr->rgbptr[2];
         }
+        r += triangeluaren_I[0]*255;
+        g += triangeluaren_I[1]*255;
+        b += triangeluaren_I[2]*255;
+        if (r > 255) r = 255;
+        if (g > 255) g = 255;
+        if (b > 255) b = 255;
     }
-    r += triangeluaren_I[0]*255;
-    g += triangeluaren_I[1]*255;
-    b += triangeluaren_I[2]*255;
-
+    
     glColor3ub(r,g,b);
     glVertex3f(xkoord, linea, zkoord );
     zkoord+=cz;
@@ -852,7 +869,6 @@ if (Ib > 1) Ib = 1;
 triangeluaren_I[0] = Ir;
 triangeluaren_I[1] = Ig;
 triangeluaren_I[2] = Ib;
-//printf("Ir: %f, Ig: %f, Ib: %f\n", Ir, Ig, Ib);
 
 modelView_kalkulatu(optr, modelView);
 
@@ -1043,11 +1059,16 @@ void triangelua_bete(triobj *optr, punto **pgoiptrptr, punto **pbeheptrptr, punt
             r += triangeluaren_I[0]*255;
             g += triangeluaren_I[1]*255;
             b += triangeluaren_I[2]*255;
+            if (r > 255) r = 255;
+            if (g > 255) g = 255;
+            if (b > 255) b = 255;
             glColor3ub(r,g,b);
             glVertex3f(p1x, y, p1z );
         
             glEnd();
         }
+
+        
         
     }
     
@@ -1093,14 +1114,17 @@ void triangelua_bete_kasu_berezia(triobj *optr, punto **pgoiptrptr, punto **pbeh
         r += triangeluaren_I[0]*255;
         g += triangeluaren_I[1]*255;
         b += triangeluaren_I[2]*255;
+        if (r > 255) r = 255;
+        if (g > 255) g = 255;
+        if (b > 255) b = 255;
         glColor3ub(r,g,b);
         glVertex3f(p1x, y, p1z );
     
         glEnd();
-    } 
+
         
-    
-    
+    } 
+ 
 
 }
 
@@ -2119,6 +2143,9 @@ int retval;
         KaR = 0.1;
         KaG = 0.1;
         KaB = 0.1;
+        triangeluaren_I[0] = 0;
+        triangeluaren_I[1] = 0;
+        triangeluaren_I[2] = 0;
 
         kamerak_hasieratu();
 
@@ -2165,6 +2192,7 @@ int retval;
                     if (sel_ptr->rgbptr !=0) sel_ptr->rgbptr[2]=0;
                     }                        
                 read_from_file("abioia-1+1.txt", 0);
+                    if (sel_ptr->rgbptr !=0) sel_ptr->rgbptr[2]=0;
             }
         
         
