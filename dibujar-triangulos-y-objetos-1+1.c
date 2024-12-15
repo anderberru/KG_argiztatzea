@@ -267,13 +267,18 @@ double f_dist(double d)
 }
 
 void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *IR, double *IG, double *IB) {
-    double Lx, Ly, Lz, Hx, Hy, Hz, Vx, Vy, Vz, NxL, NxH, intenR, intenG, intenB, dist, foko_kam[3], L_norm;
+    double Lx, Ly, Lz, Hx, Hy, Hz, Vx, Vy, Vz, NxL, NxH, intenR, intenG, intenB, dist, foko_kam[3], L_norm, N_norm, N_normalizatua[3];
     triobj *aux_ptr;
     int foko_barruan;
 
     intenR = IaR * KaR;
     intenG = IaG * KaG;
     intenB = IaB * KaB;
+
+    N_norm = sqrt(pow(N[0], 2) + pow(N[1], 2) + pow(N[2], 2));
+    N_normalizatua[0] = N[0] / N_norm;
+    N_normalizatua[1] = N[1] / N_norm;
+    N_normalizatua[2] = N[2] / N_norm;
 
     if (kameraOBJ == 1) {
         aux_ptr = sel_ptr;
@@ -303,9 +308,9 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *
     H_halkulatu(Vx, Vy, Vz, Lx, Ly, Lz, &Hx, &Hy, &Hz);
     //mxv_2(mesa, Hx, Hy, Hz, &Hx, &Hy, &Hz);
 
-    NxL = biderketa_eskalarra(N[0], N[1], N[2], Lx, Ly, Lz);
+    NxL = biderketa_eskalarra(N_normalizatua[0], N_normalizatua[1], N_normalizatua[2], Lx, Ly, Lz);
     if (NxL < 0) NxL = 0;
-    NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
+    NxH = biderketa_eskalarra(N_normalizatua[0], N_normalizatua[1], N_normalizatua[2], Hx, Hy, Hz);
     if (NxH < 0) NxH = 0;
 
     if (NxL >= 1 || NxH >= 1) printf("NxL: %f, NxH: %f\n", NxL, NxH);
@@ -330,9 +335,9 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *
     H_halkulatu(Vx, Vy, Vz, Lx, Ly, Lz, &Hx, &Hy, &Hz);
     //mxv_2(mesa, Hx, Hy, Hz, &Hx, &Hy, &Hz);
 
-    NxL = biderketa_eskalarra(N[0], N[1], N[2], Lx, Ly, Lz);
+    NxL = biderketa_eskalarra(N_normalizatua[0], N_normalizatua[1], N_normalizatua[2], Lx, Ly, Lz);
     if (NxL < 0) NxL = 0;
-    NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
+    NxH = biderketa_eskalarra(N_normalizatua[0], N_normalizatua[1], N_normalizatua[2], Hx, Hy, Hz);
     if (NxH < 0) NxH = 0;
     
 
@@ -362,9 +367,9 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *
     H_halkulatu(Vx, Vy, Vz, Lx, Ly, Lz, &Hx, &Hy, &Hz);
     //mxv_2(mesa, Hx, Hy, Hz, &Hx, &Hy, &Hz);
 
-    NxL = biderketa_eskalarra(N[0], N[1], N[2], Lx, Ly, Lz);
+    NxL = biderketa_eskalarra(N_normalizatua[0], N_normalizatua[1], N_normalizatua[2], Lx, Ly, Lz);
     if (NxL < 0) NxL = 0;
-    NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
+    NxH = biderketa_eskalarra(N_normalizatua[0], N_normalizatua[1], N_normalizatua[2], Hx, Hy, Hz);
     if (NxH < 0) NxH = 0;
 
     foko_barruan = foko_barruan_dago(argiak_ptr[2].F, Lx, Ly, Lz, argiak_ptr[2].foku_irekiera);
@@ -391,9 +396,9 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double *
     H_halkulatu(Vx, Vy, Vz, Lx, Ly, Lz, &Hx, &Hy, &Hz);
     //mxv_2(mesa, Hx, Hy, Hz, &Hx, &Hy, &Hz);
 
-    NxL = biderketa_eskalarra(N[0], N[1], N[2], Lx, Ly, Lz);
+    NxL = biderketa_eskalarra(N_normalizatua[0], N_normalizatua[1], N_normalizatua[2], Lx, Ly, Lz);
     if (NxL < 0) NxL = 0;
-    NxH = biderketa_eskalarra(N[0], N[1], N[2], Hx, Hy, Hz);
+    NxH = biderketa_eskalarra(N_normalizatua[0], N_normalizatua[1], N_normalizatua[2], Hx, Hy, Hz);
     if (NxH < 0) NxH = 0;
 
     foko_kam[0] = 0; foko_kam[1] = 0; foko_kam[2] = -1;
