@@ -1585,14 +1585,12 @@ void z_aldaketa(int dir)
 }
 
 int talka() {
-    double vx, vy, vz, vnorm;
-    vx = sel_ptr->mptr->m[3] - selCam_ptr->mptr->m[3];
-    vy = sel_ptr->mptr->m[7] - selCam_ptr->mptr->m[7];
-    vz = sel_ptr->mptr->m[11] - selCam_ptr->mptr->m[11];
-    vnorm = sqrt(pow(vx, 2.0) + pow(vy, 2.0) + pow(vz, 2.0));
-    //printf("DISTANTZIA: %f\n ", vnorm);
+    double dist;
+    
+    dist = puntuen_arteko_distantzia(selCam_ptr->mptr->m[3], selCam_ptr->mptr->m[7], selCam_ptr->mptr->m[11], sel_ptr->mptr->m[3], sel_ptr->mptr->m[7], sel_ptr->mptr->m[11]);
+    //printf("DISTANTZIA: %f\n ", dist);
 
-    if (vnorm < desplazamendua) { // 0.1 aldaketetan egiten den desplazamendua da
+    if (dist < desplazamendua) { // 0.1 aldaketetan egiten den desplazamendua da
         return 1;
     }
     return 0;
@@ -1947,7 +1945,7 @@ switch(key)
         }
 		break;
         case 'x':
-                if (kontrola == 2 && argia_index == 0) {z_aldaketa(1); break;}
+                if (kontrola == 2 && argia_index == 0) {z_aldaketa(0); break;}
                 if (kontrola != 1) x_aldaketa(1); else y_aldaketa(1);
                 if (kontrola == 0 && analisi==1 && foptr!=0) analisi_bektoreak();
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
@@ -1966,7 +1964,7 @@ switch(key)
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
                 break;
         case 'X':
-                if (kontrola == 2 && argia_index == 0) {z_aldaketa(0); break;}
+                if (kontrola == 2 && argia_index == 0) {z_aldaketa(1); break;}
                 if (kontrola != 1) x_aldaketa(0); else y_aldaketa(0);
                 if (kontrola == 0 && analisi==1 && foptr!=0) analisi_bektoreak();
                 if (kontrola == 1 || kameraOBJ == 1 || (kontrola == 0 && analisi==1 && foptr!=0)) mESA_eguneratu();
@@ -2135,7 +2133,7 @@ void print_piztutako_argiak() {
 }
 
 void print_kontrola() {
-    printf("[C]KONTROLATZEN: ");
+    printf("[c]KONTROLATZEN: ");
     switch (kontrola)
     {
     case 0:
