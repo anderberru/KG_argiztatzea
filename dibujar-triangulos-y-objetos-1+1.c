@@ -632,9 +632,9 @@ for (i = 0, xkoord=c1x, zkoord=c1z, u=c1u, v=c1v;
             g = optr->rgbptr[1];
             b = optr->rgbptr[2];
         }
-        r += triangeluaren_I[0]*255;
-        g += triangeluaren_I[1]*255;
-        b += triangeluaren_I[2]*255;
+        r = triangeluaren_I[0]*255;
+        g = triangeluaren_I[1]*255;
+        b = triangeluaren_I[2]*255;
         if (r > 255) r = 255;
         if (g > 255) g = 255;
         if (b > 255) b = 255;
@@ -1104,9 +1104,9 @@ void triangelua_bete(triobj *optr, punto **pgoiptrptr, punto **pbeheptrptr, punt
                 g = optr->rgbptr[1];
                 b = optr->rgbptr[2];
             }   
-            r += triangeluaren_I[0]*255;
-            g += triangeluaren_I[1]*255;
-            b += triangeluaren_I[2]*255;
+            r = triangeluaren_I[0]*255;
+            g = triangeluaren_I[1]*255;
+            b = triangeluaren_I[2]*255;
             if (r > 255) r = 255;
             if (g > 255) g = 255;
             if (b > 255) b = 255;
@@ -1159,9 +1159,9 @@ void triangelua_bete_kasu_berezia(triobj *optr, punto **pgoiptrptr, punto **pbeh
             g = optr->rgbptr[1];
             b = optr->rgbptr[2];
         }
-        r += triangeluaren_I[0]*255;
-        g += triangeluaren_I[1]*255;
-        b += triangeluaren_I[2]*255;
+        r = triangeluaren_I[0]*255;
+        g = triangeluaren_I[1]*255;
+        b = triangeluaren_I[2]*255;
         if (r > 255) r = 255;
         if (g > 255) g = 255;
         if (b > 255) b = 255;
