@@ -324,9 +324,6 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double x
     
     // BONBILA
     if (argiak_ptr[1].piztu == 1) {
-        //dist = puntuen_arteko_distantzia(x_mundua, y_mundua, z_mundua, argiak_ptr[1].pos->koord[0], argiak_ptr[1].pos->koord[1], argiak_ptr[1].pos->koord[2]);
-        //f_d = f_dist(dist);
-        //f_d = 1;
 
         // L
         puntuen_arteko_bektorea(x_mundua, y_mundua, z_mundua, argiak_ptr[1].pos->koord[0], argiak_ptr[1].pos->koord[1], argiak_ptr[1].pos->koord[2], &Lx, &Ly, &Lz);
@@ -351,9 +348,6 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double x
     
     // OBJEKTUA
     if (argiak_ptr[2].piztu == 1) {
-        //dist = puntuen_arteko_distantzia(x_mundua, y_mundua, z_mundua, sel_ptr->mptr->m[3], sel_ptr->mptr->m[7], sel_ptr->mptr->m[11]);
-        //f_d = f_dist(dist);
-        //f_d = 1;
         
         // L
         if (kameraOBJ == 0) {
@@ -389,9 +383,6 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double x
     
     // KAMERA
     if (argiak_ptr[3].piztu == 1) {
-        //dist = puntuen_arteko_distantzia(x_mundua, y_mundua, z_mundua, selCam_ptr->mptr->m[3], selCam_ptr->mptr->m[7], selCam_ptr->mptr->m[11]);
-        //f_d = f_dist(dist);
-    
         // L
         Lx = Vx;
         Ly = Vy;
@@ -415,13 +406,12 @@ void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double x
     
     //printf("Ir: %f, Ig: %f, Ib: %f\n", intenR, intenG, intenB);
 
+    if (intenR > 1) intenR = 1;
+    if (intenG > 1) intenG = 1;
+    if (intenB > 1) intenB = 1;
     triangeluaren_I[0] = intenR;
     triangeluaren_I[1] = intenG;
     triangeluaren_I[2] = intenB;
-    if (triangeluaren_I[0] > 1) triangeluaren_I[0] = 1;
-    if (triangeluaren_I[1] > 1) triangeluaren_I[1] = 1;
-    if (triangeluaren_I[2] > 1) triangeluaren_I[2] = 1;
-
 }
 
 double I_formula(double I, double kd, double ks, double NxL, double NxH) {
