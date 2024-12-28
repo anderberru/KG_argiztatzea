@@ -2224,6 +2224,11 @@ int retval;
                 foptr->rgbptr[1] = 0;
                 foptr->rgbptr[2] = 0;
                 */
+               read_from_file("x_wing-1+1.txt", 0);
+               sel_ptr->mptr->m[3] = 0.8;
+               sel_ptr->mptr->m[7] = -0.8;
+               sel_ptr->mptr->m[11] = 0;
+               
                read_from_file("abioia-1+1.txt", 0);
                 if (sel_ptr != 0) 
                     { sel_ptr->mptr->m[3] = -1.0;
