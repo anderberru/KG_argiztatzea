@@ -4,7 +4,7 @@
 //	Euskal Herriko Unibertsitatea
 //	http://www.ehu.eus/if
 //
-// to compile it: gcc *.c -lGL -lGLU -lglut -lm
+//  to compile it: gcc *.c -lGL -lGLU -lglut -lm
 //
 // 
 //
@@ -121,7 +121,6 @@ void foko_angelu_aldaketa(int handitu);
 void undo_argiak();
 double f_dist(double d);
 void intentsitatea_kalkulatu(double N[3], double x, double y, double z, double x_mundua, double y_mundua, double z_mundua);
-//void intentsitatea_kalkulatu2(double N[3], double x, double y, double z, double x_mundua, double y_mundua, double z_mundua);
 double puntuen_arteko_distantzia(double x1, double y1, double z1, double x2, double y2, double z2);
 void puntuen_arteko_bektorea(double x1, double y1, double z1, double x2, double y2, double z2, double *vx, double *vy, double *vz);
 void H_halkulatu(double Vx, double Vy, double Vz, double Lx, double Ly, double Lz, double *Hx, double *Hy, double *Hz);
@@ -143,7 +142,7 @@ void argiak_hasieratu() {
     argiak_ptr[0].dir = (koordlist *)malloc(sizeof(koordlist));
     argiak_ptr[0].dir->koord[0] = 0;
     argiak_ptr[0].dir->koord[1] = -1;
-    argiak_ptr[0].dir->koord[2] = -0;
+    argiak_ptr[0].dir->koord[2] = 0;
     argiak_ptr[0].dir->hptr = 0;
 
     argiak_ptr[0].I[0] = 1;
@@ -248,11 +247,11 @@ void fokuak_kalkulatu(int hasieratu) {
 
 void foko_angelu_aldaketa(int handitu) {
     double alpha, irekieraBerria;
-    if (handitu == 1) alpha = 0.1;
-    else alpha = -0.1;
+    if (handitu == 1) alpha = 0.01;
+    else alpha = -0.01;
 
     irekieraBerria = selArgi_ptr->foku_irekiera + alpha;
-    if (irekieraBerria < 0 || irekieraBerria > PI) return;
+    if (irekieraBerria < 0 || irekieraBerria > PI/2) return;
 
     selArgi_ptr->foku_irekiera = irekieraBerria;
     //printf("Foku irekiera: %f\n", selArgi_ptr->foku_irekiera);
@@ -421,10 +420,6 @@ double I_formula(double I, double kd, double ks, double NxL, double NxH) {
 int foko_barruan_dago(double F[3], double Lx, double Ly, double Lz, double irekiera) {
     double F_x_minusL, fx, fy, fz;
 
-    /*
-    if (F[0] != 0 || F[1] != 0 || F[2] != -1) mxv_2(mesa, F[0], F[1], F[2], &fx, &fy, &fz);
-    else {fx = F[0]; fy = F[1]; fz = F[2];}
-    */
     fx = F[0]; fy = F[1]; fz = F[2];
     F_x_minusL = biderketa_eskalarra(fx, fy, fz, -Lx, -Ly, -Lz);
     if (F_x_minusL > cos(irekiera)) {
@@ -698,6 +693,7 @@ vBerria[1] = vy2;
 vBerria[2] = vz2;
 }
 
+// matrize bider puntu (azken koord = 1)
 void mxv(double m[16], double koordenatuak[3], double vBerria[3]) {
     double vx, vy , vz, vx2, vy2, vz2;
 
@@ -715,6 +711,7 @@ void mxv(double m[16], double koordenatuak[3], double vBerria[3]) {
 
 }
 
+// matrize bider bektore (azken koord = 0)
 void mxv_2(double m[16], double vx, double vy, double vz, double *x, double *y, double *z) {
     
     *x = m[0]*vx + m[1]*vy + m[2]*vz;
@@ -1224,25 +1221,7 @@ for (auxptr =fCamptr; auxptr != 0; auxptr = auxptr->hptr)
         }
     }
 */
-//argien bektoreak
-/*
-for (i=0; i<4; i++) {
-    if (argiak_ptr[i].fokua == 0) {
-        glBegin(GL_LINES);
-            glVertex3d(argiak_ptr[i].mptr->m[3], argiak_ptr[i].mptr->m[7], argiak_ptr[i].mptr->m[11]);
-            glVertex3d(argiak_ptr[i].mptr->m[3] + argiak_ptr[i].dir[0], argiak_ptr[i].mptr->m[7] + argiak_ptr[i].dir[1], argiak_ptr[i].mptr->m[11] + argiak_ptr[i].dir[2]);
-        glEnd();
-    } else {
-        if (i == 2) auxptr = sel_ptr;
-        else if (i==3) auxptr = selCam_ptr;
-        glBegin(GL_LINES);
-            glVertex3d(auxptr->mptr->m[3], auxptr->mptr->m[7], auxptr->mptr->m[11]);
-            glVertex3d(auxptr->mptr->m[3] + argiak_ptr[i].F[0], auxptr->mptr->m[7] + argiak_ptr[i].F[1], auxptr->mptr->m[11] + argiak_ptr[i].F[2]);
-        glEnd();
-    }
-    
-}
-*/
+
  // marrazteko objektuak behar dira
   // no se puede dibujar sin objetos
 if (foptr ==0) {glFlush(); return;}
